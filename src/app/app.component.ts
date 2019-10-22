@@ -31,6 +31,7 @@ export class AppComponent {
     this.game.BuyItem();
     this.game.UpdateDemandRate();
     this.game.CalcProduction();
+    this.game.UpdateMaterialBuyCost();
   }
 
  

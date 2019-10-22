@@ -26,8 +26,10 @@ export class Game{
         return this._itemPrice;
     }
 
-    private _materialBuyAmount = 4000;
+    private _materialBuyAmount: number;
     private _materialBuyCost: number;
+     _materialBuyCounter: number;
+    private _materialBuyCallCounter: number;
     public get MaterialBuyCost(): number{
         return this._materialBuyCost;
     }
@@ -41,7 +43,7 @@ export class Game{
     }
 
     private _lastProductionAmount: number;
-    private _productionTimer: number;
+    private _productionCallCounter: number;
     private _production: number;
     public get Production(): number{
         return this._production;
@@ -50,6 +52,7 @@ export class Game{
 
     constructor() {
         this._madeItemAmount = 0;
+        this._materialBuyAmount = 4000;
         this._materialAmount = this._materialBuyAmount;
         this._money = 0;
         this._itemPrice = 15;
@@ -57,7 +60,9 @@ export class Game{
         this._totalItemMadeAmount = 0;
         this._lastProductionAmount = 0;
         this._production = 0;
-        this._productionTimer = 0;
+        this._productionCallCounter = 0;       
+        this._materialBuyCounter = 0;
+        this._materialBuyCallCounter = 0;
     }
 
     public MadeItem() {
@@ -74,6 +79,7 @@ export class Game{
             this._money += this._itemPrice;
         }
     }
+
     public UpdateDemandRate(){
         // let rate;
         // if (this._itemPrice <= 40) {
@@ -95,9 +101,9 @@ export class Game{
     }
 
     public CalcProduction() {
-        this._productionTimer++;
-        if (this._productionTimer >= 5) {
-            this._productionTimer = 0;
+        this._productionCallCounter++;
+        if (this._productionCallCounter >= 5) {
+            this._productionCallCounter = 0;
             this._production = this._totalItemMadeAmount - this._lastProductionAmount;
             this._lastProductionAmount = this._totalItemMadeAmount;
         }
@@ -107,6 +113,11 @@ export class Game{
         if (this.CanBuyMaterial) {
             this._money -= this._materialBuyCost;
             this._materialAmount += this._materialBuyAmount;
+
+            this._materialBuyCounter++;
+            if (this._materialBuyCounter != 0) {
+                this._materialBuyCost += Math.floor((200/100) * ((this._materialBuyCounter * 3) * 10));
+            }
         }
     }
 
@@ -117,6 +128,16 @@ export class Game{
     public DecreasePrice() {
         if (this._itemPrice >= 2) {
             this._itemPrice--;
+        }
+    }
+
+    public UpdateMaterialBuyCost(){
+        this._materialBuyCallCounter++;
+
+        if (this._materialBuyCallCounter >= 50) {
+            this._materialBuyCounter = 0;
+            this._materialBuyCallCounter = 0;
+            this._materialBuyCost = 200;
         }
     }
 }
