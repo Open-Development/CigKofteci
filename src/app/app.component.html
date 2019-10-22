@@ -24,7 +24,8 @@
                <td class="label">Mecut Malzeme:</td>
                <td> {{ this.game.MaterialAmount }} kg 
                    <span>
-                       <button (click)="this.game.BuyMaterial()">Malzeme Satin Al ({{ this.game.MaterialBuyCost }} ₺)</button>
+                       <button [disabled]="!this.game.CanBuyMaterial"
+                        (click)="this.game.BuyMaterial()">Malzeme Satin Al ({{ this.game.MaterialBuyCost }} ₺)</button>
                    </span>
                </td>
            </tr>
@@ -33,17 +34,26 @@
                <td> {{ this.game.Money }} ₺</td>
            </tr>
            <tr>
-               <td class="label"></td>
-               <td></td>
+               <td class="label">Birim Satis Fiyati:</td>
+               <td> {{ this.game.ItemPrice }} ₺
+                    <span>
+                        <button (click)="this.game.IncreasePrice()">+</button>
+                        <button (click)="this.game.DecreasePrice()">-</button>
+                    </span>
+               </td>               
            </tr>
            <tr>
-               <td class="label"></td>
-               <td></td>
+               <td class="label">Halkin Talebi:</td>
+               <td> %{{this.game.DemandRate}} </td>
            </tr>
            <tr>
-               <td class="label"></td>
-               <td></td>
+               <td class="label">Saniyedeki Uretim:</td>
+               <td>{{ this.game.Production }}</td>
            </tr>
+           <tr>
+                <td class="label">Topam Uretim:</td>
+                <td>{{ this.game.TotalProduction }}</td>
+            </tr>
         </table>
 
     </div>

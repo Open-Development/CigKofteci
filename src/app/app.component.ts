@@ -29,6 +29,8 @@ export class AppComponent {
 
   private Update() {
     this.game.BuyItem();
+    this.game.UpdateDemandRate();
+    this.game.CalcProduction();
   }
 
  
