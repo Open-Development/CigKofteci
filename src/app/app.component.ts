@@ -10,7 +10,7 @@ import { switchMap, takeUntil, catchError, map } from 'rxjs/operators';
 })
 export class AppComponent {
   
-  private game: Game;
+  public game: Game;
 
   private updateSubscription: Subscription;
   private timeInterval$ = interval(200);
