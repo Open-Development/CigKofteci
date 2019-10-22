@@ -1,0 +1,19 @@
+.header {
+    text-align: center;
+}
+
+span.amount{
+    padding-left: 50px;
+}
+
+hr{
+    color: white;
+}
+
+table{
+    border-color: gray;
+}
+
+td.label{
+    width: 200px;
+}
