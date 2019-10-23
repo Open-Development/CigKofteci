@@ -18,8 +18,29 @@
 
         <br />
 
-        <div>
-            
+        <div class="row">
+            <h2> Personel Yonetimi </h2>
+            <hr />
+
+            <table>
+                <tr>
+                    <td>
+                        <button [ngClass]="{buttonGreen: this.game.AutomationStatus('ERRAND'), buttonRed: !this.game.AutomationStatus('ERRAND')}" (click)="this.game.ToggleAutomation('ERRAND')">Cirak</button>
+                    </td>
+                    <td>
+                        <button [ngClass]="{buttonGreen: this.game.AutomationStatus('FOREMAN'), buttonRed: !this.game.AutomationStatus('FOREMAN')}" (click)="this.game.ToggleAutomation('FOREMAN')">Kalfa</button>
+                    </td>
+                    <td>
+                        <button [ngClass]="{buttonGreen: this.game.AutomationStatus('EXPERT'), buttonRed: !this.game.AutomationStatus('EXPERT')}" (click)="this.game.ToggleAutomation('EXPERT')">Usta</button>
+                    </td>
+                    <td>
+                        <button [ngClass]="{buttonGreen: this.game.AutomationStatus('MANAGER'), buttonRed: !this.game.AutomationStatus('MANAGER')}" (click)="this.game.ToggleAutomation('MANAGER')">Depo Per.</button>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <hr />
         </div>
 
         <h2> Isletme </h2>
@@ -105,7 +126,7 @@
                 <td class="aling-right">{{ this.game.WarehouseManagerStr }} 
                 </td>
                 <td>
-                    <Button [disabled]="!this.game.CanBuyWarehouseManager || this.game.WarehouseManager" (click)="this.game.BuyWarehouseManager()">Satin Al(20.000 ₺)</Button>
+                    <Button [hidden]="this.game.WarehouseManager" [disabled]="!this.game.CanBuyWarehouseManager" (click)="this.game.BuyWarehouseManager()">Satin Al(500 ₺)</Button>
                 </td>
             </tr>
         </table>               

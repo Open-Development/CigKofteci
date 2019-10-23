@@ -95,16 +95,16 @@ export class Game{
 
     //Automation - CanBuy
     public get CanBuyErrandBoy() {
-        return this._money > this._errandBoyCurrentBuyCost;
+        return this._money >= this._errandBoyCurrentBuyCost;
     }
     public get CanBuyForeman() {
-        return this._money > this._foremanCurrentBuyCost;
+        return this._money >= this._foremanCurrentBuyCost;
     }
     public get CanBuyExpert() {
-        return this._money > this._expertCurrentBuyCost;
+        return this._money >= this._expertCurrentBuyCost;
     }
     public get CanBuyWarehouseManager() {
-        return this._money > 15000;
+        return this._money >= 500;
     }
 
     public get WarehouseManagerStr() : string {
@@ -118,6 +118,11 @@ export class Game{
         return this._warehouseManager;
     }
 
+    private _errandIsActive: boolean;
+    private _foremanIsActive: boolean;
+    private _expertIsActive: boolean;
+    private _warehouseManagerIsActive: boolean;
+    
     //Game Status
     private _isOver: boolean;
     public get IsOver(): boolean{
@@ -143,9 +148,9 @@ export class Game{
     public Start() {
         this._itemMaterCost = 200;
         this._itemStockAmount = 0;
-        this._materialBuyAmount = 4000;
+        this._materialBuyAmount = 10000;
         this._materialAmount = this._materialBuyAmount;
-        this._money = 400000;
+        this._money = 250000;
         this._itemPrice = 15;
         this._materialBuyCost = 200;              
         this._materialBuyCounter = 0;
@@ -173,12 +178,16 @@ export class Game{
         this._foremanCount = 0;
         this._expertCount = 0;
         this._warehouseManager = false;
+        this._errandIsActive = true;
+        this._foremanIsActive = true;
+        this._expertIsActive = true;
+        this._warehouseManagerIsActive = true;
     }
 
     public MadeItem(amount: number = 1) {
         
         for (let index = 1; index <= amount; index++) {
-            if (this._warehouseManager) {
+            if (this._warehouseManager && this._warehouseManagerIsActive) {
                 this.CheckMaterialAmount();
             }
 
@@ -229,36 +238,13 @@ export class Game{
     }
 
     public BuyMaterial(userCalled: boolean = false) {
-        if (this.CanBuyMaterial && (!this._warehouseManager || userCalled)) {
+        if (this.CanBuyMaterial && (this._materialBuyCost < 350 || userCalled)) {
             this._money -= this._materialBuyCost;
             this._materialAmount += this._materialBuyAmount;
 
-            this._materialBuyCounter++;
+            this._materialBuyCounter++;   
             if (this._materialBuyCounter != 0 && this._materialBuyCost <= 1000) {
                 this._materialBuyCost += Math.floor((200/100) * ((this._materialBuyCounter * 3) * 10));
-            }
-        } else if (this._warehouseManager) {
-            let buyCapacity = this._money / this._materialBuyCost;
-            let autoPriductionCapatity = this._errandBoyCount + (this._foremanCount * 2) + (this._expertCount * 3);
-            let productionMaterialNeed = this._itemMaterCost * autoPriductionCapatity;
-            let buyAmount = 0;
-
-            console.log(buyCapacity);
-            console.log(autoPriductionCapatity);
-            console.log(productionMaterialNeed);
-
-            
-            if (this._materialAmount <= productionMaterialNeed && buyCapacity > 0) {
-                if (autoPriductionCapatity >= buyCapacity) {
-                    buyAmount = buyCapacity;
-                } else if (autoPriductionCapatity < buyCapacity) {
-                    buyAmount = autoPriductionCapatity;
-                }
-
-                console.log(buyAmount);
-                this._materialAmount += buyAmount * this._itemMaterCost;
-                this._money -= buyAmount * this._materialBuyCost;
-                console.log("buyAmount");
             }
         }
     }
@@ -310,7 +296,7 @@ export class Game{
         }
 
         this._warehouseManager = true;
-        this._money -= 15000;
+        this._money -= 500;
     }
 
     private automationTimer: number = 0;
@@ -323,16 +309,50 @@ export class Game{
             this.automationTimer = 0;
         }
             
-        if (this._errandBoyCount> 0){
+        if (this._errandBoyCount> 0 && this._errandIsActive){
             this.MadeItem(this._errandBoyCount);
         }
 
-        if (this._foremanCount > 0){
+        if (this._foremanCount > 0 && this._foremanIsActive){
             this.MadeItem(this._foremanCount * 2);
         }
 
-        if (this._expertCount > 0){
+        if (this._expertCount > 0 && this._expertIsActive){
             this.MadeItem(this._expertCount * 3);
         }
-    }    
+    } 
+    
+    public ToggleAutomation(key: string) {
+        switch (key) {
+            case "ERRAND":
+                this._errandIsActive = !this._errandIsActive;
+                break;
+            case "FOREMAN":
+                this._foremanIsActive = !this._foremanIsActive;
+                break;
+            case "EXPERT":
+                this._expertIsActive = !this._expertIsActive;
+                break;
+            case "MANAGER":
+                this._warehouseManagerIsActive = !this._warehouseManagerIsActive;
+                break;
+            default:
+                break;
+        }    
+    }
+
+    public AutomationStatus(key: string) : boolean {
+        switch (key) {
+            case "ERRAND":
+                return this._errandIsActive;
+            case "FOREMAN":
+                return this._foremanIsActive;
+            case "EXPERT":
+                return this._expertIsActive;
+            case "MANAGER":
+                return this._warehouseManagerIsActive;
+            default:
+                return false;
+        }
+    }
 }
