@@ -1,60 +1,138 @@
-<div class="row">
+<div class="row" [hidden]="this.game.IsOver">
     <div class="header">
-        <h1>Cig Kofteci</h1>
+        <h1>Cocuk Adam Cig Kofte Salonu</h1>
     </div>
 
     <hr /> <br />
 
     <div class="content">
         <div>
-            <label for="amount">Mevcut Cig Kofte Adeti:</label>
-            <span class="amount">{{ this.game.ItemAmount }}</span>
+            <table>
+                <tr>
+                    <td><label for="">Mevcut Cig Kofte Adeti:</label></td>
+                    <td>{{ this.game.ItemAmount }}</td>
+                    <td><button id="MadeItem" (click)="this.game.MadeItem()">Cig Kofte Uret</button></td>
+                </tr>
+            </table>
         </div>
 
         <br />
 
         <div>
-            <button id="MadeItem" (click)="this.game.MadeItem()">Cig Kofte Uret</button>
+            
         </div>
 
+        <h2> Isletme </h2>
         <hr />
 
         <table>
            <tr>
                <td class="label">Mecut Malzeme:</td>
-               <td> {{ this.game.MaterialAmount }} kg 
-                   <span>
-                       <button [disabled]="!this.game.CanBuyMaterial"
-                        (click)="this.game.BuyMaterial()">Malzeme Satin Al ({{ this.game.MaterialBuyCost }} ₺)</button>
-                   </span>
+               <td class="aling-right"> 
+                   {{ this.game.MaterialAmount }} gr
+               </td>
+               <td>
+                    <button [disabled]="!this.game.CanBuyMaterial"
+                    (click)="this.game.BuyMaterial(true)">Malzeme Satin Al ({{ this.game.MaterialBuyCost }} ₺)</button>
                </td>
            </tr>
            <tr>
                <td class="label">Para Mikari:</td>
-               <td> {{ this.game.Money }} ₺</td>
+               <td class="aling-right"> {{ this.game.Money }} ₺</td>
+               <td></td>
            </tr>
            <tr>
                <td class="label">Birim Satis Fiyati:</td>
-               <td> {{ this.game.ItemPrice }} ₺
+               <td class="aling-right"> 
+                   {{ this.game.ItemPrice }} ₺                  
+               </td>    
+               <td>
                     <span>
                         <button (click)="this.game.IncreasePrice()">+</button>
                         <button (click)="this.game.DecreasePrice()">-</button>
                     </span>
-               </td>               
+               </td>    
            </tr>
            <tr>
                <td class="label">Halkin Talebi:</td>
-               <td> %{{this.game.DemandRate}} </td>
+               <td class="aling-right"> %{{this.game.DemandRate}} </td>
+               <td></td>
            </tr>
            <tr>
                <td class="label">Saniyedeki Uretim:</td>
-               <td>{{ this.game.Production }}</td>
+               <td class="aling-right">{{ this.game.Production }}</td>
+               <td></td>
            </tr>
            <tr>
                 <td class="label">Topam Uretim:</td>
-                <td>{{ this.game.TotalProduction }}</td>
+                <td class="aling-right">{{ this.game.TotalProduction }}</td> 
+                <td></td>
             </tr>
         </table>
 
+        <br />
+
+        <h2> Calisanlar </h2>
+        <hr />
+
+        <table>
+            <tr>
+                <td class="label">Cirak Sayisi:</td>                
+                <td class="aling-right">{{ this.game.ErrandCount }} 
+                </td>
+                <td>
+                    <Button [disabled]="!this.game.CanBuyErrandBoy" (click)="this.game.BuyErrandBoy()">Satin Al({{this.game.ErrandBoyBuyCost}} ₺)</Button>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Kalfa Sayisi:</td>                
+                <td class="aling-right">{{ this.game.ForemanCount }}                    
+                </td>
+                <td>
+                    <Button [disabled]="!this.game.CanBuyForeman" (click)="this.game.BuyForeman()">Satin Al({{this.game.ForemanBuyCost}} ₺)</Button>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Usta Sayisi:</td>                
+                <td class="aling-right">{{ this.game.ExpertCount }}                    
+                </td>
+                <td>
+                    <Button [disabled]="!this.game.CanBuyExpert" (click)="this.game.BuyExpert()">Satin Al({{this.game.ExpertBuyCost}} ₺)</Button>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Depo Personeli:</td>                
+                <td class="aling-right">{{ this.game.WarehouseManagerStr }} 
+                </td>
+                <td>
+                    <Button [disabled]="!this.game.CanBuyWarehouseManager || this.game.WarehouseManager" (click)="this.game.BuyWarehouseManager()">Satin Al(20.000 ₺)</Button>
+                </td>
+            </tr>
+        </table>               
+
     </div>
+</div>
+
+<div class="row" [hidden]="!this.game.IsOver">
+    <br />
+
+    <h1>Game over!</h1>
+
+    <table>
+        <tr>
+            <td>Toplam Gecen Sure:</td>
+            <td> {{this.game.TotalPlayTime | date:'mm:ss'}}</td>
+        </tr>
+        <tr>
+            <td>Toplam Uretilen Cig Kofte:</td>
+            <td> {{this.game.TotalProduction}} </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <button class="reset-button" (click)="this.game.Start()">Yeniden Basla</button>
+
 </div>

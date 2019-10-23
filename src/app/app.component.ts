@@ -13,6 +13,7 @@ export class AppComponent {
   public game: Game;
 
   private updateSubscription: Subscription;
+
   private timeInterval$ = interval(200);
 
   constructor() {
@@ -20,7 +21,7 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.updateSubscription = this.timeInterval$.subscribe(val => this.Update());
+    this.updateSubscription = this.timeInterval$.subscribe(val => this.Update());    
   }
 
   ngOnDestroy() {
@@ -28,11 +29,15 @@ export class AppComponent {
   }
 
   private Update() {
-    this.game.BuyItem();
-    this.game.UpdateDemandRate();
-    this.game.CalcProduction();
+    if (this.game.IsOver) {
+      
+    } else {
+      this.game.BuyItem();
+      this.game.UpdateDemandRate();
+      this.game.CalcProduction();
+      this.game.UpdateMaterialBuyCost();
+      this.game.Automation();
+    }
   }
-
- 
 
 }
