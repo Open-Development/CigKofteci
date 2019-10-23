@@ -17,3 +17,15 @@ table{
 td.label{
     width: 200px;
 }
+
+td{
+    width: 300px;
+}
+
+#MadeItem{
+    height: 50px;
+}
+
+td.aling-right{
+    text-align: right;
+}

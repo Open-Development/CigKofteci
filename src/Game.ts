@@ -1,12 +1,19 @@
 export class Game{
 
+    //Game start and end time info
+    private _startDate: Date;
+    private _endDate: Date;
+    public get TotalPlayTime(): number{
+        return this._endDate.getTime() - this._startDate.getTime();
+    }
+
     private _totalItemMadeAmount: number;   
     public get TotalProduction(): number{
         return this._totalItemMadeAmount;
     }
-    private _madeItemAmount : number;
+    private _itemStockAmount : number;
     public get ItemAmount() : number {
-        return this._madeItemAmount;
+        return this._itemStockAmount;
     }
 
     private _materialAmount : number;
@@ -14,7 +21,7 @@ export class Game{
         return this._materialAmount;
     }
     
-    private _itemMaterCost: number = 200;
+    private _itemMaterCost: number;
     
     private _money : number;
     public get Money(): number{
@@ -48,34 +55,146 @@ export class Game{
     public get Production(): number{
         return this._production;
     }
+
+    //Automation
+    private _errandBoyCount: number;
+    private _foremanCount: number;
+    private _expertCount: number;
+    private _warehouseManager: boolean;
+
+    private _errandBoyBaseCost: number;
+    private _errandBoyCurrentBuyCost: number;
+
+    private _foremanBaseCost: number;
+    private _foremanCurrentBuyCost: number;
+
+    private _expertBaseCost: number;
+    private _expertCurrentBuyCost: number;
+
+    //Automation - BuyCost
+    public get ErrandBoyBuyCost(): number{
+        return this._errandBoyCurrentBuyCost;
+    }
+    public get ForemanBuyCost(): number{
+        return this._foremanCurrentBuyCost;
+    } 
+    public get ExpertBuyCost(): number{
+        return this._expertCurrentBuyCost;
+    }
+
+    //Automation - Count
+    public get ErrandCount() : number {
+        return this._errandBoyCount;
+    }
+    public get ForemanCount() : number {
+        return this._foremanCount;
+    }
+    public get ExpertCount() : number {
+        return this._expertCount;
+    }
+
+    //Automation - CanBuy
+    public get CanBuyErrandBoy() {
+        return this._money > this._errandBoyCurrentBuyCost;
+    }
+    public get CanBuyForeman() {
+        return this._money > this._foremanCurrentBuyCost;
+    }
+    public get CanBuyExpert() {
+        return this._money > this._expertCurrentBuyCost;
+    }
+    public get CanBuyWarehouseManager() {
+        return this._money > 15000;
+    }
+
+    public get WarehouseManagerStr() : string {
+        if (this._warehouseManager) {
+            return "Var";
+        } else {
+            return "Yok";
+        }
+    }
+    public get WarehouseManager() : boolean{
+        return this._warehouseManager;
+    }
+
+    //Game Status
+    private _isOver: boolean;
+    public get IsOver(): boolean{
+        if (this._isOver) {
+            return this._isOver;
+        }
+
+        let isOver = this._money < this._materialBuyCost && this._materialAmount < this._itemMaterCost && this._itemStockAmount == 0;
+
+        if (!this._isOver && isOver) {
+            this._isOver = isOver;
+            this._endDate = new Date();
+        }
+
+        return this._isOver;
+    }
 //----------------------------------------------
 
     constructor() {
-        this._madeItemAmount = 0;
-        this._materialBuyAmount = 4000;
-        this._materialAmount = this._materialBuyAmount;
-        this._money = 0;
-        this._itemPrice = 15;
-        this._materialBuyCost = 200;
-        this._totalItemMadeAmount = 0;
-        this._lastProductionAmount = 0;
-        this._production = 0;
-        this._productionCallCounter = 0;       
-        this._materialBuyCounter = 0;
-        this._materialBuyCallCounter = 0;
+        this.Start();
     }
 
-    public MadeItem() {
-        if (this._materialAmount >= this._itemMaterCost) {
-            this._madeItemAmount++;
+    public Start() {
+        this._itemMaterCost = 200;
+        this._itemStockAmount = 0;
+        this._materialBuyAmount = 4000;
+        this._materialAmount = this._materialBuyAmount;
+        this._money = 400000;
+        this._itemPrice = 15;
+        this._materialBuyCost = 200;              
+        this._materialBuyCounter = 0;
+        this._materialBuyCallCounter = 0;
+      
+        //To Calculate Productivity
+        this._lastProductionAmount = 0;
+        this._production = 0;
+        this._productionCallCounter = 0;    
+
+        //Game Status
+        this._isOver = false;        
+        this._startDate = new Date();
+        this._endDate = new Date();
+        this._totalItemMadeAmount = 0;    
+        
+        //Auto Generation
+        this._errandBoyBaseCost = 2000;
+        this._errandBoyCurrentBuyCost = this._errandBoyBaseCost;
+        this._foremanBaseCost = 6000;
+        this._foremanCurrentBuyCost = this._foremanBaseCost;
+        this._expertBaseCost = 12000;
+        this._expertCurrentBuyCost = this._expertBaseCost;
+        this._errandBoyCount = 0;
+        this._foremanCount = 0;
+        this._expertCount = 0;
+        this._warehouseManager = false;
+    }
+
+    public MadeItem(amount: number = 1) {
+        
+        for (let index = 1; index <= amount; index++) {
+            if (this._warehouseManager) {
+                this.CheckMaterialAmount();
+            }
+
+            if (this._materialAmount < this._itemMaterCost) {
+                return;
+            }
+            
+            this._itemStockAmount++;
             this._materialAmount -= this._itemMaterCost;
             this._totalItemMadeAmount++;
-        }
+        }      
     }
 
     public BuyItem() {
-        if (this._madeItemAmount > 0 && Math.random() * 100 < this._demandRate) {
-            this._madeItemAmount--;
+        if (this._itemStockAmount > 0 && Math.random() * 100 < this._demandRate) {
+            this._itemStockAmount--;
             this._money += this._itemPrice;
         }
     }
@@ -109,14 +228,37 @@ export class Game{
         }
     }
 
-    public BuyMaterial() {
-        if (this.CanBuyMaterial) {
+    public BuyMaterial(userCalled: boolean = false) {
+        if (this.CanBuyMaterial && (!this._warehouseManager || userCalled)) {
             this._money -= this._materialBuyCost;
             this._materialAmount += this._materialBuyAmount;
 
             this._materialBuyCounter++;
-            if (this._materialBuyCounter != 0) {
+            if (this._materialBuyCounter != 0 && this._materialBuyCost <= 1000) {
                 this._materialBuyCost += Math.floor((200/100) * ((this._materialBuyCounter * 3) * 10));
+            }
+        } else if (this._warehouseManager) {
+            let buyCapacity = this._money / this._materialBuyCost;
+            let autoPriductionCapatity = this._errandBoyCount + (this._foremanCount * 2) + (this._expertCount * 3);
+            let productionMaterialNeed = this._itemMaterCost * autoPriductionCapatity;
+            let buyAmount = 0;
+
+            console.log(buyCapacity);
+            console.log(autoPriductionCapatity);
+            console.log(productionMaterialNeed);
+
+            
+            if (this._materialAmount <= productionMaterialNeed && buyCapacity > 0) {
+                if (autoPriductionCapatity >= buyCapacity) {
+                    buyAmount = buyCapacity;
+                } else if (autoPriductionCapatity < buyCapacity) {
+                    buyAmount = autoPriductionCapatity;
+                }
+
+                console.log(buyAmount);
+                this._materialAmount += buyAmount * this._itemMaterCost;
+                this._money -= buyAmount * this._materialBuyCost;
+                console.log("buyAmount");
             }
         }
     }
@@ -139,5 +281,58 @@ export class Game{
             this._materialBuyCallCounter = 0;
             this._materialBuyCost = 200;
         }
+    }   
+    private CheckMaterialAmount() {
+        if (this._materialAmount < 500 && this._money > this._materialBuyCost) {
+            this.BuyMaterial();
+        }
     }
+    
+    //Automation -------------------------------------
+    public BuyErrandBoy() {
+        this._errandBoyCount++;      
+        this._money -= this._errandBoyCurrentBuyCost;
+        this._errandBoyCurrentBuyCost = ((this._errandBoyBaseCost / 100) * this._errandBoyCount) + this._errandBoyCurrentBuyCost;
+    }   
+    public BuyForeman() {
+        this._foremanCount++;
+        this._money -= this._foremanCurrentBuyCost;
+        this._foremanCurrentBuyCost = ((this._foremanBaseCost / 100) * this._foremanCount) +  this._foremanCurrentBuyCost;
+    }  
+    public BuyExpert() {
+        this._expertCount++;
+        this._money -= this._expertCurrentBuyCost;
+        this._expertCurrentBuyCost = ((this._expertBaseCost / 100) * this._expertCount) +  this._expertCurrentBuyCost;
+    }
+    public BuyWarehouseManager() {
+        if (this._warehouseManager) {
+            return;
+        }
+
+        this._warehouseManager = true;
+        this._money -= 15000;
+    }
+
+    private automationTimer: number = 0;
+    public Automation() {
+        this.automationTimer++;        
+
+        if (this.automationTimer < 15) {
+            return;
+        } else {
+            this.automationTimer = 0;
+        }
+            
+        if (this._errandBoyCount> 0){
+            this.MadeItem(this._errandBoyCount);
+        }
+
+        if (this._foremanCount > 0){
+            this.MadeItem(this._foremanCount * 2);
+        }
+
+        if (this._expertCount > 0){
+            this.MadeItem(this._expertCount * 3);
+        }
+    }    
 }
