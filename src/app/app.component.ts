@@ -29,11 +29,9 @@ export class AppComponent {
   }
 
   private Update() {
-    if (this.game.IsOver) {
-      
-    } else {
-      this.game.BuyItem();
+    if (!this.game.IsOver){
       this.game.UpdateDemandRate();
+      this.game.BuyItem();      
       this.game.CalcProduction();
       this.game.UpdateMaterialBuyCost();
       this.game.Automation();

@@ -29,3 +29,13 @@ td{
 td.aling-right{
     text-align: right;
 }
+
+.buttonGreen{
+    background-color: green;
+    color: white;
+}
+
+.buttonRed{
+    background-color: red;
+    color: white;
+}
