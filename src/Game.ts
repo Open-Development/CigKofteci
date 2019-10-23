@@ -209,23 +209,23 @@ export class Game{
     }
 
     public UpdateDemandRate(){
-        // let rate;
-        // if (this._itemPrice <= 40) {
-        //   rate = (2 / Math.sqrt(this._itemPrice)) * 100;
-        // } else {
-        //   const maxRate = (2 / Math.sqrt(40)) * 100;
-        //   // 40tl 20%
-        //   // 60tl 0%
-        //   rate = (maxRate * (60 - this._itemPrice)) / 20;
-        // }
-        // this._demandRate = Math.floor(Math.max(0, rate));
+        let rate;
+        if (this._itemPrice <= 40) {
+          rate = (2 / Math.sqrt(this._itemPrice)) * 100;
+        } else {
+          const maxRate = (2 / Math.sqrt(40)) * 100;
+          // 40tl 20%
+          // 60tl 0%
+          rate = (maxRate * (60 - this._itemPrice)) / 20;
+        }
+        this._demandRate = Math.floor(Math.max(0, rate));
 
-        let rate: number = Math.floor(100 - (this._itemPrice / 40) * 100);
-        if (rate < 0) {
-            rate = 0;
-        }            
+        // let rate: number = Math.floor(100 - (this._itemPrice / 40) * 100);
+        // if (rate < 0) {
+        //     rate = 0;
+        // }            
 
-        this._demandRate = rate;
+        // this._demandRate = rate;
     }
 
     public CalcProduction() {
